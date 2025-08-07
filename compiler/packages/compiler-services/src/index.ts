@@ -34,7 +34,7 @@ export async function compileCode(options: CompileOptions): Promise<CompileResul
     fileName = `main.${language}`,
     optimize = false, 
     debug = true,
-    timeout = 10000 // 10 seconds default timeout
+    timeout = 30000 // 30 seconds default timeout (increased from 10s)
   } = options;
   
   // Create a temporary directory for compilation
@@ -92,18 +92,31 @@ export async function compileCode(options: CompileOptions): Promise<CompileResul
         throw new Error(`Unsupported language: ${language}`);
     }
     
-    // Set a timeout for the compilation process
+    // Set a timeout for the compilation process with cleanup
+    let timeoutId: NodeJS.Timeout | undefined;
     const timeoutPromise = new Promise<CompileResult>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error(`Compilation timed out after ${timeout}ms`));
+      timeoutId = setTimeout(() => {
+        // Clean up before rejecting with timeout
+        if ('cleanup' in compiler) {
+          (compiler as any).cleanup().catch(console.error);
+        }
+        reject(new Error(`Compilation timed out after ${timeout}ms. This might happen with large projects or slow systems.`));
       }, timeout);
     });
     
     // Run the compiler with timeout
-    const result = await Promise.race([
-      compiler.run(),
-      timeoutPromise
-    ]);
+    let result: CompileResult;
+    try {
+      result = await Promise.race([
+        compiler.run(),
+        timeoutPromise
+      ]);
+    } finally {
+      // Clear the timeout if the compilation completes before timeout
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    }
     
     // Clean up temporary files
     if ('cleanup' in compiler) {
