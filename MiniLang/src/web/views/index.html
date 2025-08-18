@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLang Compiler</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
+    <script src="/js/monaco-config.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 MiniLang Compiler</h1>
+            <p>A multi-language code editor with MiniLang compilation support</p>
+        </header>
+
+        <div class="main-content">
+            <div class="editor-section">
+                <div class="editor-header">
+                    <div class="editor-title">
+                        <h2>📝 Source Code Editor</h2>
+                        <span id="languageIndicator" class="language-indicator">MiniLang</span>
+                    </div>
+                    <div class="editor-controls">
+                        <select id="languageSelect" class="language-select">
+                            <option value="minilang">MiniLang</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="c">C</option>
+                            <option value="csharp">C#</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="typescript">TypeScript</option>
+                        </select>
+                        <select id="themeSelect" class="language-select">
+                            <option value="vs-dark">Dark Theme</option>
+                            <option value="vs">Light Theme</option>
+                            <option value="hc-black">High Contrast</option>
+                        </select>
+                        <button id="loadExample" class="btn btn-secondary">Load Example</button>
+                        <button id="clearCode" class="btn btn-secondary">Clear</button>
+                        <button id="compileBtn" class="btn btn-primary">🔨 Compile</button>
+                    </div>
+                </div>
+                <div class="editor-container">
+                    <div id="codeEditor"></div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="tokens">🔤 Tokens</button>
+                    <button class="tab-button" data-tab="ast">🌳 AST</button>
+                    <button class="tab-button" data-tab="intermediate">⚙️ Intermediate Code</button>
+                    <button class="tab-button" data-tab="symbols">📊 Symbol Table</button>
+                    <button class="tab-button" data-tab="execution">▶️ Execution</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="tokens" class="tab-pane active">
+                        <h3>Lexical Analysis Results</h3>
+                        <div id="tokensOutput" class="output-container">
+                            <p class="placeholder">Compile your code to see tokens...</p>
+                        </div>
+                    </div>
+
+                    <div id="ast" class="tab-pane">
+                        <h3>Abstract Syntax Tree</h3>
+                        <div id="astOutput" class="output-container">
+                            <p class="placeholder">Compile your code to see the AST...</p>
+                        </div>
+                    </div>
+
+                    <div id="intermediate" class="tab-pane">
+                        <h3>Three-Address Code</h3>
+                        <div id="intermediateOutput" class="output-container">
+                            <p class="placeholder">Compile your code to see intermediate code...</p>
+                        </div>
+                    </div>
+
+                    <div id="symbols" class="tab-pane">
+                        <h3>Symbol Table</h3>
+                        <div id="symbolsOutput" class="output-container">
+                            <p class="placeholder">Compile your code to see the symbol table...</p>
+                        </div>
+                    </div>
+
+                    <div id="execution" class="tab-pane">
+                        <h3>Program Execution</h3>
+                        <div id="executionOutput" class="output-container">
+                            <p class="placeholder">Compile your code to see execution results...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-section">
+            <div class="status-header">
+                <h3>📋 Compilation Status</h3>
+                <div id="statusIndicator" class="status-indicator">Ready</div>
+            </div>
+            <div id="errorsOutput" class="errors-container">
+                <p class="placeholder">No errors or warnings.</p>
+            </div>
+        </div>
+
+        <!-- Example Selection Modal -->
+        <div id="exampleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>📚 Choose an Example</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div id="examplesList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Built by Odito Al Nafiu & Ishrat Jahan | MiniLang Compiler v1.0</p>
+    </footer>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
