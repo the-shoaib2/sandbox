@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,9 +9,7 @@ import {
   Trash2, 
   FileText, 
   Palette, 
-  Code2,
-  Download,
-  Upload
+  Code2
 } from 'lucide-react';
 
 interface CodeEditorProps {
@@ -60,7 +58,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 }) => {
   const editorRef = useRef<any>(null);
 
-  const handleEditorDidMount = (editor: any) => {
+  const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
     
     // Add keyboard shortcuts
@@ -134,7 +132,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
             <Button 
               onClick={onCompile} 
-              disabled={isCompiling || language !== 'minilang'}
+              disabled={isCompiling}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <Play className="h-4 w-4 mr-2" />

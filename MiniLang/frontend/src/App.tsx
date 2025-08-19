@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { CodeEditor } from '@/components/CodeEditor';
 import { CompilerResults } from '@/components/CompilerResults';
 import { StatusPanel } from '@/components/StatusPanel';
@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Sparkles
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface CompilationResult {
   success: boolean;
@@ -47,18 +48,21 @@ function App() {
   const [status, setStatus] = useState<'ready' | 'compiling' | 'success' | 'error'>('ready');
 
   const handleCompile = useCallback(async () => {
-    if (language !== 'minilang') return;
-    
     setIsCompiling(true);
     setStatus('compiling');
     
     try {
-      const response = await fetch('/api/compile', {
+      const endpoint = language === 'minilang' ? '/api/compile' : '/api/compile-multi';
+      const requestBody = language === 'minilang' 
+        ? { code } 
+        : { code, language };
+        
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify(requestBody),
       });
       
       const result = await response.json();
@@ -88,8 +92,6 @@ function App() {
   }, []);
 
   const handleLoadExample = useCallback(async () => {
-    if (language !== 'minilang') return;
-    
     try {
       const response = await fetch(`/api/examples/${language}`);
       const examples = await response.json();
@@ -108,11 +110,67 @@ function App() {
     setCompilationResult(null);
     setStatus('ready');
     
-    if (newLanguage === 'minilang') {
-      setCode(DEFAULT_MINILANG_CODE);
-    } else {
-      setCode(`// ${newLanguage.toUpperCase()} code editor\n// Compilation is only available for MiniLang\n\nconsole.log("Hello, World!");`);
+    const languageExamples = {
+      minilang: DEFAULT_MINILANG_CODE,
+      javascript: `// JavaScript example
+console.log("Hello from JavaScript!");
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(n => n * 2);
+console.log("Doubled:", doubled);`,
+      python: `# Python example
+print("Hello from Python!")
+for i in range(5):
+    print(f"Count: {i}")
+    
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print(f"Fibonacci(10): {fibonacci(10)}")`,
+      java: `// Java example
+public class HelloJava {
+    public static void main(String[] args) {
+        System.out.println("Hello from Java!");
+        int x = 10, y = 5;
+        System.out.println("Sum: " + (x + y));
     }
+}`,
+      c: `// C example
+#include <stdio.h>
+int main() {
+    printf("Hello from C!\\n");
+    int x = 10, y = 5;
+    printf("Product: %d\\n", x * y);
+    return 0;
+}`,
+      cpp: `// C++ example
+#include <iostream>
+using namespace std;
+int main() {
+    cout << "Hello from C++!" << endl;
+    int x = 10, y = 5;
+    cout << "Division: " << x / y << endl;
+    return 0;
+}`,
+      go: `// Go example
+package main
+import "fmt"
+func main() {
+    fmt.Println("Hello from Go!")
+    x, y := 10, 5
+    fmt.Printf("Difference: %d\\n", x - y)
+}`,
+      rust: `// Rust example
+fn main() {
+    println!("Hello from Rust!");
+    let x = 10;
+    let y = 5;
+    println!("Modulo: {}", x % y);
+}`
+    };
+    
+    setCode(languageExamples[newLanguage as keyof typeof languageExamples] || `// ${newLanguage.toUpperCase()} code editor\nconsole.log("Hello, World!");`);
   }, []);
 
   return (

@@ -1,4 +1,6 @@
-import { Token, TokenType, KEYWORDS } from '../types/tokens';
+import { Token, TokenType, KEYWORDS } from '../types/unified';
+
+export { TokenType };
 
 export class Lexer {
   private source: string;
@@ -122,12 +124,27 @@ export class Lexer {
   }
 
   private addToken(type: TokenType, value: string): void {
-    this.tokens.push({
+    const start = {
+      line: this.line,
+      column: this.column - value.length,
+      offset: this.position - value.length
+    } as const;
+    
+    const end = {
+      line: this.line,
+      column: this.column,
+      offset: this.position
+    } as const;
+    
+    const token: Token = {
       type,
       value,
-      line: this.line,
-      column: this.column - value.length
-    });
+      start,
+      end,
+      source: this.source.slice(start.offset, end.offset)
+    };
+    
+    this.tokens.push(token);
   }
 
   private isDigit(char: string): boolean {

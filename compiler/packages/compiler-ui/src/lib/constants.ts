@@ -1,6 +1,6 @@
-import { LanguageType } from '../app/components/LanguageSelector';
+import { Language } from '../app/components/ui/language-selector';
 
-export const DEFAULT_CODE_SNIPPETS: Record<LanguageType, string> = {
+export const DEFAULT_CODE_SNIPPETS: Record<Language, string> = {
   cpp: `#include <iostream>
 
 int main() {
@@ -19,4 +19,12 @@ int main() {
     }
 }`,
   python: `print("Hello, Python!")`,
+  custom: `// Custom Language Example
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+let result = fibonacci(10);
+console.log("Fibonacci(10) =", result);`,
 };

@@ -13,9 +13,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '../lib/utils';
 import { Language, LanguageType, LANGUAGES } from '../types';
-import { Check, ChevronsUpDown } from '../lib/icons';
-
-export type { LanguageType } from '../types';
+import { Check, ChevronsUpDown } from './ui/icon';
 
 interface LanguageSelectorProps {
   value: LanguageType;
