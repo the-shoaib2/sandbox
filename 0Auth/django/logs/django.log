@@ -1,0 +1,4 @@
+INFO 2025-10-04 18:25:52,973 signals 135937 139724540489984 Profile created for user: admin@example.com
+INFO 2025-10-04 18:25:52,974 signals 135937 139724540489984 Created profile for user: admin@example.com
+INFO 2025-10-04 18:25:52,981 signals 135937 139724540489984 Profile updated for user: admin@example.com
+INFO 2025-10-04 18:25:58,873 autoreload 136016 140485878092032 Watching for file changes with StatReloader

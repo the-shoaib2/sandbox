@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Profile - OAuth Authentication{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>Update Profile
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.bio.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user-edit me-1"></i>Bio
+                                </label>
+                                {{ form.bio }}
+                                {% if form.bio.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.bio.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Location
+                                </label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.location.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.website.id_for_label }}" class="form-label">
+                                    <i class="fas fa-globe me-1"></i>Website
+                                </label>
+                                {{ form.website }}
+                                {% if form.website.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.website.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.github_username.id_for_label }}" class="form-label">
+                                    <i class="fab fa-github me-1"></i>GitHub Username
+                                </label>
+                                {{ form.github_username }}
+                                {% if form.github_username.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.github_username.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Enter your GitHub username without the @ symbol</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.twitter_username.id_for_label }}" class="form-label">
+                                    <i class="fab fa-twitter me-1"></i>Twitter Username
+                                </label>
+                                {{ form.twitter_username }}
+                                {% if form.twitter_username.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.twitter_username.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Enter your Twitter username without the @ symbol</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-link me-1"></i>Connect Additional Accounts
+                                </label>
+                                <div class="d-grid gap-2">
+                                    {% if not user.oauth_accounts.filter.provider='google' %}
+                                        <a href="{% url 'accounts:oauth_login' 'google' %}" class="btn btn-outline-danger btn-sm">
+                                            <i class="fab fa-google me-2"></i>Connect Google
+                                        </a>
+                                    {% endif %}
+                                    
+                                    {% if not user.oauth_accounts.filter.provider='github' %}
+                                        <a href="{% url 'accounts:oauth_login' 'github' %}" class="btn btn-outline-dark btn-sm">
+                                            <i class="fab fa-github me-2"></i>Connect GitHub
+                                        </a>
+                                    {% endif %}
+                                    
+                                    {% if not user.oauth_accounts.filter.provider='microsoft' %}
+                                        <a href="{% url 'accounts:oauth_login' 'microsoft' %}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fab fa-microsoft me-2"></i>Connect Microsoft
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                        </a>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Help Section -->
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Profile Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Bio:</strong> Tell others about yourself in a few sentences.
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Location:</strong> Help others find you by adding your city and country.
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Website:</strong> Share your personal website or blog.
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>Social Links:</strong> Connect your GitHub and Twitter accounts for networking.
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-success me-2"></i>
+                        <strong>OAuth Accounts:</strong> Connect multiple OAuth providers for easier login.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form validation
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, textarea');
+    
+    inputs.forEach(input => {
+        input.classList.add('form-control');
+        
+        // Add real-time validation
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+    });
+    
+    function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.name;
+        
+        // Remove existing validation classes
+        field.classList.remove('is-valid', 'is-invalid');
+        
+        // Validate based on field type
+        if (fieldName === 'website' && value) {
+            const urlPattern = /^https?:\/\/.+/;
+            if (!urlPattern.test(value)) {
+                field.classList.add('is-invalid');
+                return false;
+            }
+        }
+        
+        if (fieldName === 'github_username' && value) {
+            const githubPattern = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+            if (!githubPattern.test(value)) {
+                field.classList.add('is-invalid');
+                return false;
+            }
+        }
+        
+        if (fieldName === 'twitter_username' && value) {
+            const twitterPattern = /^[a-zA-Z0-9_]{1,15}$/;
+            if (!twitterPattern.test(value)) {
+                field.classList.add('is-invalid');
+                return false;
+            }
+        }
+        
+        field.classList.add('is-valid');
+        return true;
+    }
+    
+    // Form submission validation
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fix the validation errors before submitting.');
+        }
+    });
+});
+</script>
+{% endblock %}

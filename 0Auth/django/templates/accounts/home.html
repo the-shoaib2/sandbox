@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - OAuth Authentication{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="fas fa-shield-alt text-primary" style="font-size: 4rem;"></i>
+                </div>
+                
+                <h1 class="card-title mb-3">Welcome</h1>
+                <p class="card-text text-muted mb-4">
+                    {% if user.is_authenticated %}
+                        Welcome back, {{ user.first_name|default:user.email }}!
+                    {% else %}
+                        Sign in with your preferred OAuth provider
+                    {% endif %}
+                </p>
+                
+                {% if user.is_authenticated %}
+                    <div class="mb-4">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-circle me-2"></i>View Profile
+                        </a>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        You're already logged in! Access your profile or connect additional OAuth accounts.
+                    </div>
+                {% else %}
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'accounts:oauth_login' 'google' %}" class="btn btn-outline-danger btn-lg">
+                            <i class="fab fa-google me-2"></i>Continue with Google
+                        </a>
+                        
+                        <a href="{% url 'accounts:oauth_login' 'github' %}" class="btn btn-outline-dark btn-lg">
+                            <i class="fab fa-github me-2"></i>Continue with GitHub
+                        </a>
+                        
+                        <a href="{% url 'accounts:oauth_login' 'microsoft' %}" class="btn btn-outline-primary btn-lg">
+                            <i class="fab fa-microsoft me-2"></i>Continue with Microsoft
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-lock text-success" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>Secure</h5>
+                    <p class="text-muted">Industry-standard OAuth 2.0 authentication with encrypted token storage.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-users text-info" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>Multiple Providers</h5>
+                    <p class="text-muted">Support for Google, GitHub, and Microsoft OAuth providers.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-mobile-alt text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h5>Responsive</h5>
+                    <p class="text-muted">Fully responsive design that works on all devices.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add loading state to OAuth buttons
+    const oauthButtons = document.querySelectorAll('a[href*="oauth"]');
+    
+    oauthButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Redirecting...';
+            this.style.pointerEvents = 'none';
+            
+            // Reset after 5 seconds if still on page
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.style.pointerEvents = 'auto';
+            }, 5000);
+        });
+    });
+});
+</script>
+{% endblock %}

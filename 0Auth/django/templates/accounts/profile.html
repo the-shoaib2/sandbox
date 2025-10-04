@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - OAuth Authentication{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-circle me-2"></i>User Profile
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        {% if profile.avatar_url %}
+                            <img src="{{ profile.avatar_url }}" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 120px; height: 120px;">
+                                <i class="fas fa-user text-white" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <h5>{{ user.first_name|default:"User" }} {{ user.last_name|default:"" }}</h5>
+                        <p class="text-muted">{{ user.email }}</p>
+                        
+                        {% if user.is_verified %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Verified
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Unverified
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-9">
+                        <h6 class="text-muted mb-3">Personal Information</h6>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>Username:</strong></div>
+                            <div class="col-sm-9">{{ user.username }}</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>Email:</strong></div>
+                            <div class="col-sm-9">{{ user.email }}</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-sm-3"><strong>Joined:</strong></div>
+                            <div class="col-sm-9">{{ user.date_joined|date:"F j, Y" }}</div>
+                        </div>
+                        
+                        {% if profile.bio %}
+                            <div class="row mb-3">
+                                <div class="col-sm-3"><strong>Bio:</strong></div>
+                                <div class="col-sm-9">{{ profile.bio }}</div>
+                            </div>
+                        {% endif %}
+                        
+                        {% if profile.location %}
+                            <div class="row mb-3">
+                                <div class="col-sm-3"><strong>Location:</strong></div>
+                                <div class="col-sm-9">{{ profile.location }}</div>
+                            </div>
+                        {% endif %}
+                        
+                        {% if profile.website %}
+                            <div class="row mb-3">
+                                <div class="col-sm-3"><strong>Website:</strong></div>
+                                <div class="col-sm-9">
+                                    <a href="{{ profile.website }}" target="_blank" rel="noopener">
+                                        {{ profile.website }} <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mt-4">
+                            <a href="{% url 'accounts:update_profile' %}" class="btn btn-primary">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- OAuth Accounts -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-link me-2"></i>Connected Accounts
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if oauth_accounts %}
+                    {% for account in oauth_accounts %}
+                        <div class="d-flex align-items-center justify-content-between mb-3 p-3 border rounded">
+                            <div class="d-flex align-items-center">
+                                {% if account.provider == 'google' %}
+                                    <i class="fab fa-google text-danger me-3" style="font-size: 1.5rem;"></i>
+                                {% elif account.provider == 'github' %}
+                                    <i class="fab fa-github text-dark me-3" style="font-size: 1.5rem;"></i>
+                                {% elif account.provider == 'microsoft' %}
+                                    <i class="fab fa-microsoft text-primary me-3" style="font-size: 1.5rem;"></i>
+                                {% endif %}
+                                
+                                <div>
+                                    <h6 class="mb-0">{{ account.provider|title }}</h6>
+                                    <small class="text-muted">
+                                        {% if account.is_token_expired %}
+                                            <span class="text-danger">Token Expired</span>
+                                        {% else %}
+                                            <span class="text-success">Connected</span>
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% if account.is_token_expired %}
+                                        <li>
+                                            <a class="dropdown-item text-warning" href="#" onclick="refreshToken('{{ account.provider }}')">
+                                                <i class="fas fa-sync-alt me-2"></i>Refresh Token
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="{% url 'accounts:disconnect_oauth' account.provider %}" 
+                                           onclick="return confirm('Are you sure you want to disconnect your {{ account.provider }} account?')">
+                                            <i class="fas fa-unlink me-2"></i>Disconnect
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-unlink mb-3" style="font-size: 2rem;"></i>
+                        <p>No OAuth accounts connected</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Social Links -->
+        {% if profile.github_username or profile.twitter_username %}
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-share-alt me-2"></i>Social Links
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if profile.github_username %}
+                        <a href="https://github.com/{{ profile.github_username }}" target="_blank" class="btn btn-outline-dark btn-sm mb-2 w-100">
+                            <i class="fab fa-github me-2"></i>GitHub: {{ profile.github_username }}
+                        </a>
+                    {% endif %}
+                    
+                    {% if profile.twitter_username %}
+                        <a href="https://twitter.com/{{ profile.twitter_username }}" target="_blank" class="btn btn-outline-info btn-sm w-100">
+                            <i class="fab fa-twitter me-2"></i>Twitter: {{ profile.twitter_username }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshToken(provider) {
+    if (confirm('Refresh token for ' + provider + '?')) {
+        fetch('{% url "accounts:refresh_token_api" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                provider: provider
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Failed to refresh token: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to refresh token');
+        });
+    }
+}
+</script>
+{% endblock %}
